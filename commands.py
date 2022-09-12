@@ -25,11 +25,21 @@ def seed_db():
         ['Stephen', 'King', 'United States of America', 21, 9, 1947],
         ['George', 'Orwell', 'Indian', 25, 6, 1903],
         ['Harper', 'Lee', 'United States of America', 28, 4, 1926], 
-        ['J. D.', 'Salinger', 'United States of America', 1, 1, 1919]]
+        ['J. D.', 'Salinger', 'United States of America', 1, 1, 1919],
+        ['J. R. R.', 'Tolkien', 'United Kingdom', 3, 1, 1892]]
     books = [
         ['The Grapes of Wrath', 'Fiction', 464, 14, 4, 1939], 
         ['The Great Gatsby', 'Fiction', 180, 10, 4, 1925], 
         ['Harry Potter and the Philosopher\'s Stone', 'Fantasy', 352, 26, 6, 1997], 
+        ['Harry Potter and the Chamber of Secrets', 'Fantasy', 251, 2, 7, 1998], 
+        ['Harry Potter and the Prisoner of Azkaban', 'Fantasy', 317, 8, 7, 1999], 
+        ['Harry Potter and the Goblet of Fire', 'Fantasy', 636, 8, 7, 2000], 
+        ['Harry Potter and the Order of the Phoenix', 'Fantasy', 766, 21, 6, 2003], 
+        ['Harry Potter and the Half-Blood Prince', 'Fantasy', 607, 16, 7, 2005], 
+        ['Harry Potter and the Deathly Hallows', 'Fantasy', 607, 21, 7, 2007], 
+        ['LOTR: The Fellowship of the Ring', 'Fantasy', 423, 29, 7, 1954],
+        ['LOTR: The Two Towers', 'Fantasy', 352, 11, 11, 1954],
+        ['LOTR: The Return of the King', 'Fantasy', 416, 1, 2, 1955],
         ['It', 'Horror', 1138, 15, 8, 1986], 
         ['1984', 'Fiction', 304, 8, 6, 1949], 
         ['To Kill a Mockingbird', 'Fiction', 384, 11, 7, 1960], 
