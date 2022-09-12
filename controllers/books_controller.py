@@ -29,3 +29,26 @@ def new_book():
     db.session.add(book)
     db.session.commit()
     return jsonify(book_schema.dump(book))
+
+# delete book
+@books.route("/<int:id>", methods=["DELETE"])
+def delete_book(id):
+    book = Book.query.get(id)
+    if not book:
+        return {"error": "Book id not found."}, 404
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify(book_schema.dump(book))
+
+@books.route("/<int:id>", methods=["PUT"])
+def update_book(id):
+    book = Book.query.get(id)
+    if not book:
+        return {"error": "Book id not found."}, 404
+    book_fields = book_schema.load(request.json)
+    book.title = book_fields["title"]
+    book.genre = book_fields["genre"]
+    book.year = book_fields["year"]
+    book.length = book_fields["length"]
+    db.session.commit()
+    return jsonify(book_schema.dump(book))
