@@ -30,7 +30,6 @@ def new_book():
     db.session.commit()
     return jsonify(book_schema.dump(book))
 
-# delete book
 @books.route("/<int:id>", methods=["DELETE"])
 def delete_book(id):
     book = Book.query.get(id)
