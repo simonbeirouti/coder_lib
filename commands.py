@@ -1,7 +1,9 @@
 from flask import Blueprint
 from main import db
+from main import bcrypt
 from models.authors import Author
 from models.books import Book
+from models.users import User
 from datetime import date
 
 db_commands = Blueprint("db", __name__)
@@ -44,23 +46,35 @@ def seed_db():
         ['1984', 'Fiction', 304, 8, 6, 1949], 
         ['To Kill a Mockingbird', 'Fiction', 384, 11, 7, 1960], 
         ['The Catcher in the Rye', 'Fiction', 240, 16, 7, 1951]]
+    users = [
+        ['simonbe', 'hi@e.com', '123qwe123', True],
+        ['simonbe2', 'bye@e.com', '123qwe123', False],
+        ['user1', '1@e.com', '123qwe123', False],
+        ['user2', '2@e.com', '123qwe123', False]]
     for author in authors:
         new_author = Author(
-            first_name=author[0], 
-            last_name=author[1], 
-            country=author[2], 
-            dob=date(day = author[3], month = author[4], year = author[5])
+            first_name = author[0], 
+            last_name = author[1], 
+            country = author[2], 
+            dob = date(day = author[3], month = author[4], year = author[5])
         )
         db.session.add(new_author)
     for book in books:
         new_book = Book(
-            title=book[0], 
-            genre=book[1], 
-            length=book[2], 
-            year=date(day = book[3], month = book[4], year = book[5])
+            title = book[0], 
+            genre = book[1], 
+            length = book[2], 
+            year = date(day = book[3], month = book[4], year = book[5])
         )
         db.session.add(new_book)
-
+    for user in users:
+        new_user = User(
+            username = user[0], 
+            email = user[1], 
+            password = bcrypt.generate_password_hash(user[2]).decode('utf-8'),
+            admin = user[3]
+        )
+        db.session.add(new_user)
     db.session.commit()
     print("Database seeded.")
     
