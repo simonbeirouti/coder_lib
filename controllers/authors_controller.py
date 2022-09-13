@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from main import db
 from models.authors import Author
 from schemas.author_schema import author_schema, authors_schema
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 authors = Blueprint("authors", __name__, url_prefix="/authors")
 
@@ -20,7 +21,10 @@ def get_author(id):
     return jsonify(result)
 
 @authors.route("/", methods=["POST"])
+@jwt_required()
 def new_author():
+    if get_jwt_identity() != "librarian":
+        return {"error": "Only librarians can add authors."}, 403
     author_fields = author_schema.load(request.json)
     author = Author(
         first_name = author_fields["first_name"],
@@ -33,7 +37,10 @@ def new_author():
     return jsonify(author_schema.dump(author))
 
 @authors.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_author(id):
+    if get_jwt_identity() != "librarian":
+        return {"error": "Only librarians can delete authors."}, 403
     author = Author.query.get(id)
     if not author:
         return {"error": "Author id not found."}, 404
@@ -42,7 +49,10 @@ def delete_author(id):
     return jsonify(author_schema.dump(author))
 
 @authors.route("/<int:id>", methods=["PUT"])
+@jwt_required()
 def update_author(id):
+    if get_jwt_identity() != "librarian":
+        return {"error": "Only librarians can update authors."}, 403
     author = Author.query.get(id)
     if not author:
         return {"error": "Author id not found."}, 404
