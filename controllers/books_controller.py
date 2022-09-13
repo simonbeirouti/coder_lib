@@ -1,8 +1,12 @@
 from flask import Blueprint, jsonify, request
 from main import db
 from models.books import Book
+from models.reservation import Reservation
+from models.users import User
 from schemas.book_schema import book_schema, books_schema
+from schemas.reservation_schema import reservation_schema, reservations_schema
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import date
 
 books = Blueprint("books", __name__, url_prefix="/books")
 
@@ -28,7 +32,8 @@ def new_book():
         title = book_fields["title"],
         genre = book_fields["genre"],
         year = book_fields["year"],
-        length = book_fields["length"]
+        length = book_fields["length"],
+        author_id = book_fields["author_id"]
     )
     db.session.add(book)
     db.session.commit()
@@ -61,3 +66,31 @@ def update_book(id):
     book.length = book_fields["length"]
     db.session.commit()
     return jsonify(book_schema.dump(book))
+
+@books.route("/reservations", methods=["GET"])
+@jwt_required()
+def get_all_reservations():
+    if get_jwt_identity() != "librarian":
+        return {"error": "Only librarians can view books with reservations."}, 403
+    reservation_list = Reservation.query.all()
+    result = reservations_schema.dump(reservation_list)
+    return result
+
+@books.route("/<int:book_id>/reservations", methods=["POST"])
+@jwt_required()
+def new_reservation(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        return {"error": "Book id not found."}, 404
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return {"error": "User not found in the database"}, 403
+    reservation = Reservation(
+        date = date.today(),
+        book = book,
+        user = user,
+    )
+    db.session.add(reservation)
+    db.session.commit()
+    return jsonify(reservation_schema.dump(reservation))
