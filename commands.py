@@ -49,10 +49,10 @@ def seed_db():
         ['To Kill a Mockingbird', 'Fiction', 384, 11, 7, 1960, 6], 
         ['The Catcher in the Rye', 'Fiction', 240, 16, 7, 1951, 7]]
     users = [
-        ['simonbe', 'hi@e.com', '123qwe123', True],
-        ['simonbe2', 'bye@e.com', '123qwe123', False],
-        ['user1', '1@e.com', '123qwe123', False],
-        ['user2', '2@e.com', '123qwe123', False]]
+        ['simonbe', 'hi@e.com', '123qwe123'],
+        ['simonbe2', 'bye@e.com', '123qwe123'],
+        ['user1', '1@e.com', '123qwe123'],
+        ['user2', '2@e.com', '123qwe123']]
     librarians = [
         ['StacyWo', 'sc@lib.com', '123qwe123', 'Stacy Wo'],
         ['RegalBro', 'rb@lib.com', '123qwe123', 'Regal Bro'],
@@ -86,8 +86,7 @@ def seed_db():
         new_user = User(
             username = user[0], 
             email = user[1], 
-            password = bcrypt.generate_password_hash(user[2]).decode('utf-8'),
-            admin = user[3]
+            password = bcrypt.generate_password_hash(user[2]).decode('utf-8')
         )
         db.session.add(new_user)
     db.session.commit()
