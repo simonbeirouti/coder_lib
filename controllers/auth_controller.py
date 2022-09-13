@@ -6,6 +6,7 @@ from models.users import User
 from schemas.user_schema import user_schema
 from models.librarians import Librarian
 from schemas.librarian_schema import librarian_schema
+from marshmallow.exceptions import ValidationError
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -22,12 +23,11 @@ def register_user():
         username = user_fields["username"],
         password = bcrypt.generate_password_hash(user_fields["password"]).decode("utf-8"),
         email = user_fields["email"],
-        admin = user_fields["admin"],
     )
     db.session.add(user)
     db.session.commit()
     token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(days=1))
-    return {"username": user.username, "token": token}
+    return {"username": user.username, "token": token}, 200
 
 @auth.route("/login", methods=["POST"])
 def login_user():
@@ -38,7 +38,7 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, user_fields["password"]):
         return {"error": "Password is not valid."}, 404
     token = create_access_token(identity=str(user.user_id), expires_delta=timedelta(days=1))
-    return {"username": user.username, "token": token}
+    return {"username": user.username, "token": token}, 200
 
 @auth.route("/librarian/login", methods=["POST"])
 def login_librarian():
@@ -49,7 +49,7 @@ def login_librarian():
     if not bcrypt.check_password_hash(librarian.password, librarian_fields["password"]):
         return {"error": "Password is not valid."}, 404
     token = create_access_token(identity="librarian", expires_delta=timedelta(days=1))
-    return {"librarian": librarian.username, "token": token}
+    return {"librarian": librarian.username, "token": token}, 200
 
 @auth.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
@@ -61,7 +61,7 @@ def delete_user(id):
         return {"error": "User id not found."}, 404
     db.session.delete(user)
     db.session.commit()
-    return jsonify(user_schema.dump(user))
+    return jsonify(user_schema.dump(user)), 200
 
 @auth.route("/<int:id>", methods=["PUT"])
 @jwt_required()
@@ -77,4 +77,8 @@ def update_user(id):
     user.email = user_fields["email"]
     user.dob = user_fields["dob"]
     db.session.commit()
-    return jsonify(user_schema.dump(user))
+    return jsonify(user_schema.dump(user)), 200
+
+@auth.errorhandler(ValidationError)
+def handle_marshmallow_validation(err):
+    return err.messages, 400
