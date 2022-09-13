@@ -12,15 +12,34 @@ books = Blueprint("books", __name__, url_prefix="/books")
 
 @books.route("/", methods=["GET"])
 def get_books():
+    if request.query_string:
+        if request.args.get("genre"):
+            filtered_list = Book.query.filter_by(genre = request.args.get("genre"))
+            result = books_schema.dump(filtered_list)
+            return result, 200
+        elif request.args.get("author"):
+            filtered_list = Book.query.filter_by(author = request.args.get("author"))
+            result = books_schema.dump(filtered_list)
+            return result, 200
+        elif request.args.get("title"):
+            filtered_list = Book.query.filter_by(title = request.args.get("title"))
+            result = books_schema.dump(filtered_list)
+            return result, 200
+        elif request.args.get("year"):
+            filtered_list = Book.query.filter_by(year = request.args.get("year"))
+            result = books_schema.dump(filtered_list)
+            return result, 200
+        else:
+            return {"message": "Invalid query string"}, 400
     books_list = Book.query.all()
     result = books_schema.dump(books_list)
-    return result
+    return result, 200
 
 @books.route("/<int:id>", methods=["GET"])
 def get_book(id):
     book = Book.query.get(id)
     result = book_schema.dump(book)
-    return result
+    return result, 200
 
 @books.route("/", methods=["POST"])
 @jwt_required()
@@ -37,7 +56,7 @@ def new_book():
     )
     db.session.add(book)
     db.session.commit()
-    return jsonify(book_schema.dump(book))
+    return jsonify(book_schema.dump(book)), 201
 
 @books.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
@@ -49,7 +68,7 @@ def delete_book(id):
         return {"error": "Book id not found."}, 404
     db.session.delete(book)
     db.session.commit()
-    return jsonify(book_schema.dump(book))
+    return jsonify(book_schema.dump(book)), 201
 
 @books.route("/<int:id>", methods=["PUT"])
 @jwt_required()
@@ -65,7 +84,7 @@ def update_book(id):
     book.year = book_fields["year"]
     book.length = book_fields["length"]
     db.session.commit()
-    return jsonify(book_schema.dump(book))
+    return jsonify(book_schema.dump(book)), 201
 
 @books.route("/reservations", methods=["GET"])
 @jwt_required()
@@ -74,7 +93,7 @@ def get_all_reservations():
         return {"error": "Only librarians can view books with reservations."}, 403
     reservation_list = Reservation.query.all()
     result = reservations_schema.dump(reservation_list)
-    return result
+    return result, 201
 
 @books.route("/<int:book_id>/reservations", methods=["POST"])
 @jwt_required()
@@ -93,4 +112,4 @@ def new_reservation(book_id):
     )
     db.session.add(reservation)
     db.session.commit()
-    return jsonify(reservation_schema.dump(reservation))
+    return jsonify(reservation_schema.dump(reservation)), 200
