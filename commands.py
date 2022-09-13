@@ -4,6 +4,7 @@ from main import bcrypt
 from models.authors import Author
 from models.books import Book
 from models.users import User
+from models.librarians import Librarian
 from datetime import date
 
 db_commands = Blueprint("db", __name__)
@@ -51,6 +52,10 @@ def seed_db():
         ['simonbe2', 'bye@e.com', '123qwe123', False],
         ['user1', '1@e.com', '123qwe123', False],
         ['user2', '2@e.com', '123qwe123', False]]
+    librarians = [
+        ['StacyWo', 'sc@lib.com', '123qwe123', 'Stacy Wo'],
+        ['RegalBro', 'rb@lib.com', '123qwe123', 'Regal Bro'],
+        ['TuPac', 'tp@lib.com', '123qwe123', 'Tu Pac']]
     for author in authors:
         new_author = Author(
             first_name = author[0], 
@@ -75,6 +80,14 @@ def seed_db():
             admin = user[3]
         )
         db.session.add(new_user)
+    for librarian in librarians:
+        new_librarian = Librarian(
+            username = librarian[0], 
+            email = librarian[1], 
+            password = bcrypt.generate_password_hash(librarian[2]).decode('utf-8'),
+            name = librarian[3]
+        )
+        db.session.add(new_librarian)
     db.session.commit()
     print("Database seeded.")
     
